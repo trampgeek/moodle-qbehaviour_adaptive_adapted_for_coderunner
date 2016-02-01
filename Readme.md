@@ -8,7 +8,7 @@ https://github.com/trampgeek/moodle-qtype_coderunner/. It provides the
 caching of question test results needed to prevent re-testing a student's
 code every time the result page is viewed.
 
-To install, either [download the zip file](https://github.com/trampgeek/moodle-qbehaviour_adaptive_adapted_for_coderunner/zipball/master),
+To install, either [download the zip file](https://github.com/trampgeek/moodle-qbehaviour_adaptive_adapted_for_coderunner/archive/master.zip,
 unzip it, and place it in the directory `moodle/question/behaviour/adaptive_adapted_for_coderunner`.
 Alternatively, get the code using git by running the following command in the
 top level folder of your Moodle install:
