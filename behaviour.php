@@ -34,12 +34,13 @@
  *  question_attempt_pending_step as a parameter rather than the response
  *  copied from that step. This allows the question to cache the test results
  *  within the step, which is stored in the database.
- * 
- *  Also override adjusted_fraction and adaptive_mark_details_from_step to 
+ *
+ *  Also override adjusted_fraction and adaptive_mark_details_from_step to
  *  support the flexible CodeRunner penalty_regime.
  */
 
 defined('MOODLE_INTERNAL') || die();
+define('PRECHECK', true);
 
 require_once($CFG->dirroot . '/question/behaviour/adaptive/behaviour.php');
 
@@ -51,8 +52,32 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
         return 'qtype_coderunner_question';
     }
 
+    // Override parent method to allow for the added 'precheck' button.
+    public function get_expected_data() {
+        $vars = parent::get_expected_data();
+        if (!$this->qa->get_state()->is_finished()) {
+            $vars['precheck'] = PARAM_BOOL;
+        }
+        return $vars;
+    }
 
-    public function process_submit(question_attempt_pending_step $pendingstep) {
+
+    // Override parent method to allow for the added 'precheck' button.
+    public function process_action(question_attempt_pending_step $pendingstep) {
+        if ($pendingstep->has_behaviour_var('precheck')) {
+            return $this->process_precheck($pendingstep);
+        } else {
+            return parent::process_action($pendingstep);
+        }
+    }
+
+
+    public function process_precheck(question_attempt_pending_step $pendingstep) {
+        return $this->process_submit($pendingstep, PRECHECK);
+    }
+
+
+    public function process_submit(question_attempt_pending_step $pendingstep, $isprecheck=false) {
         $status = $this->process_save($pendingstep);
         $response = $pendingstep->get_qt_data();
         if (!$this->question->is_complete_response($response)) {
@@ -65,36 +90,60 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
 
         $prevstep = $this->qa->get_last_step_with_behaviour_var('_try');
         $prevresponse = $prevstep->get_qt_data();
+        $prevwasprecheck = $prevstep->get_behaviour_var('_precheck', 0);
+        $thisisprecheck = $isprecheck ? 1 : 0;  // Map truthy/falsy to 1, 0
+        if ($prevwasprecheck === $thisisprecheck && $this->question->is_same_response($response, $prevresponse)) {
+            return question_attempt::DISCARD;
+        }
+
         $prevtries = $this->qa->get_last_behaviour_var('_try', 0);
         $prevbest = $pendingstep->get_fraction();
         if (is_null($prevbest)) {
             $prevbest = 0;
         }
 
+        list($fraction, $state) = $this->grade_response($pendingstep, $isprecheck);
 
-        // *** changed bit #1 begins ***
-        $gradeData = $this->question->grade_response($response);
+        if ($prevstep->get_state() == question_state::$complete) {
+            $pendingstep->set_state(question_state::$complete);
+        } else if ($state == question_state::$gradedright && !$isprecheck) {
+            $pendingstep->set_state(question_state::$complete);
+        } else {
+            $pendingstep->set_state(question_state::$todo);
+        }
+
+        if ($isprecheck) {
+            // leave mark and count of tries unchanged
+            $pendingstep->set_fraction($prevbest);
+            $pendingstep->set_behaviour_var('_try', $prevtries + 1);
+            $pendingstep->set_behaviour_var('_precheck', 1);
+            $prevraw = $this->qa->get_last_behaviour_var('_rawfraction', 0);
+            $pendingstep->set_behaviour_var('_rawfraction', $prevraw);
+        } else {
+            $pendingstep->set_fraction(max($prevbest, $this->adjusted_fraction($fraction, $prevtries)));
+            $pendingstep->set_behaviour_var('_try', $prevtries + 1);
+            $pendingstep->set_behaviour_var('_precheck', 0);
+            $pendingstep->set_behaviour_var('_rawfraction', $fraction);
+        }
+        $pendingstep->set_new_response_summary($this->question->summarise_response($response));
+
+        return question_attempt::KEEP;
+    }
+
+
+    // Grade the CodeRunner submission and cache the results$pendingstep-> in the pending step
+    // for re-use.
+    // Return a two-element array containing the mark (a fraction) and the stage
+    protected function grade_response(question_attempt_pending_step $pendingstep, $isprecheck) {
+        $response = $pendingstep->get_qt_data();
+        $gradeData = $this->question->grade_response($response, $isprecheck);
         list($fraction, $state) = $gradeData;
         if (count($gradeData) > 2) {
             foreach($gradeData[2] as $name => $value) {
                 $pendingstep->set_qt_var($name, $value);
             }
         }
-        // *** end of changed bit #1 ***
-
-        $pendingstep->set_fraction(max($prevbest, $this->adjusted_fraction($fraction, $prevtries)));
-        if ($prevstep->get_state() == question_state::$complete) {
-            $pendingstep->set_state(question_state::$complete);
-        } else if ($state == question_state::$gradedright) {
-            $pendingstep->set_state(question_state::$complete);
-        } else {
-            $pendingstep->set_state(question_state::$todo);
-        }
-        $pendingstep->set_behaviour_var('_try', $prevtries + 1);
-        $pendingstep->set_behaviour_var('_rawfraction', $fraction);
-        $pendingstep->set_new_response_summary($this->question->summarise_response($response));
-
-        return question_attempt::KEEP;
+        return array($fraction, $state);
     }
 
 
@@ -129,7 +178,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
 
     // Override usual adaptive mark details to handle penalty regime.
     // This is messy. Is there a better way?
-    
+
     protected function adaptive_mark_details_from_step(
             question_attempt_step $gradedstep,
             question_state $state, $maxmark, $penalty) {
@@ -146,7 +195,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
             $details->currentpenalty = $details->totalpenalty * $details->maxmark;
             $details->improvable = $this->is_state_improvable($gradedstep->get_state());
         }
-        
+
         return $details;
     }
 
