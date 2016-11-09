@@ -48,7 +48,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
     const IS_ARCHETYPAL = false;
 
     public function required_question_definition_type() {
-        // Restrict behaviour to programming questions
+        // Restrict behaviour to programming questions.
         return 'qtype_coderunner_question';
     }
 
@@ -91,7 +91,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
         $prevstep = $this->qa->get_last_step_with_behaviour_var('_try');
         $prevresponse = $prevstep->get_qt_data();
         $prevwasprecheck = $prevstep->get_behaviour_var('_precheck', 0);
-        $thisisprecheck = $isprecheck ? 1 : 0;  // Map truthy/falsy to 1, 0
+        $thisisprecheck = $isprecheck ? 1 : 0;  // Map truthy/falsy to 1, 0.
         if ($prevwasprecheck === $thisisprecheck && $this->question->is_same_response($response, $prevresponse)) {
             return question_attempt::DISCARD;
         }
@@ -113,7 +113,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
         }
 
         if ($isprecheck) {
-            // leave mark and count of tries unchanged
+            // Leave mark and count of tries unchanged.
             $pendingstep->set_fraction($prevbest);
             $pendingstep->set_behaviour_var('_try', $prevtries + 1);
             $pendingstep->set_behaviour_var('_precheck', 1);
@@ -133,13 +133,13 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
 
     // Grade the CodeRunner submission and cache the results$pendingstep-> in the pending step
     // for re-use.
-    // Return a two-element array containing the mark (a fraction) and the stage
+    // Return a two-element array containing the mark (a fraction) and the state.
     protected function grade_response(question_attempt_pending_step $pendingstep, $isprecheck) {
         $response = $pendingstep->get_qt_data();
-        $gradeData = $this->question->grade_response($response, $isprecheck);
-        list($fraction, $state) = $gradeData;
-        if (count($gradeData) > 2) {
-            foreach($gradeData[2] as $name => $value) {
+        $gradedata = $this->question->grade_response($response, $isprecheck);
+        list($fraction, $state) = $gradedata;
+        if (count($gradedata) > 2) {
+            foreach ($gradedata[2] as $name => $value) {
                 $pendingstep->set_qt_var($name, $value);
             }
         }
@@ -152,8 +152,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
     // penalties, each a percent, to be applied in order on each submission.
     // If the last penalty is '...', expand the previous two entries as an
     // arithmetic progression.
-    protected function adjusted_fraction($fraction, $prevtries)
-    {
+    protected function adjusted_fraction($fraction, $prevtries) {
         if (!isset($this->question->penaltyregime) || $this->question->penaltyregime === '') {
             return parent::adjusted_fraction($fraction, $prevtries);
         } else if ($prevtries == 0) {
@@ -224,20 +223,20 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
 
                 // There is a Moodle bug here, resulting in regrading of
                 // already-graded questions.
-                // See https://tracker.moodle.org/browse/MDL-42399
+                // See https://tracker.moodle.org/browse/MDL-42399.
                 $prevtries -= 1;
             }
 
-            // *** changed bit #2 begins ***
-            // Cache extra data from grade response.
+            /****** Changed bit #2 begins ***.
+             * Cache extra data from grade response */
             $gradedata = $this->question->grade_response($response);
             list($fraction, $state) = $gradedata;
             if (count($gradedata) > 2) {
-                foreach($gradedata[2] as $name => $value) {
+                foreach ($gradedata[2] as $name => $value) {
                     $pendingstep->set_qt_var($name, $value);
                 }
             }
-            // *** end of changed bit #2 ***
+            /* *** end of changed bit #2 ***/
 
             $pendingstep->set_behaviour_var('_try', $prevtries + 1);
             $pendingstep->set_behaviour_var('_rawfraction', $fraction);

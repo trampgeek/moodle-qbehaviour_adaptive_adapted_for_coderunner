@@ -17,3 +17,9 @@ top level folder of your Moodle install:
 
 For full install instructions, see the
 [CodeRunner install instructions](https://github.com/trampgeek/moodle-qtype_coderunner/blob/master/Readme.md).
+
+CHANGE HISTORY
+
+Updated 9/11/16 to provide *Precheck* capabilities (an extra button that
+students can click to get a penalty-free run that provides limited checking
+of their code).
