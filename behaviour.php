@@ -65,15 +65,10 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
     // Override parent method to allow for the added 'precheck' button.
     public function process_action(question_attempt_pending_step $pendingstep) {
         if ($pendingstep->has_behaviour_var('precheck')) {
-            return $this->process_precheck($pendingstep);
+            return $this->process_submit($pendingstep, PRECHECK);
         } else {
             return parent::process_action($pendingstep);
         }
-    }
-
-
-    public function process_precheck(question_attempt_pending_step $pendingstep) {
-        return $this->process_submit($pendingstep, PRECHECK);
     }
 
 
@@ -97,6 +92,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
         }
 
         $prevtries = $this->qa->get_last_behaviour_var('_try', 0);
+        $prevprechecks = $this->qa->get_last_behaviour_var('_numprechecks', 0);
         $prevbest = $pendingstep->get_fraction();
         if (is_null($prevbest)) {
             $prevbest = 0;
@@ -112,17 +108,19 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
             $pendingstep->set_state(question_state::$todo);
         }
 
+        $pendingstep->set_behaviour_var('_try', $prevtries + 1);
+
         if ($isprecheck) {
-            // Leave mark and count of tries unchanged.
+            // Leave mark unchanged. Increment try and numprechecks.
             $pendingstep->set_fraction($prevbest);
-            $pendingstep->set_behaviour_var('_try', $prevtries + 1);
             $pendingstep->set_behaviour_var('_precheck', 1);
+            $pendingstep->set_behaviour_var('_numprechecks', $prevprechecks + 1);
             $prevraw = $this->qa->get_last_behaviour_var('_rawfraction', 0);
             $pendingstep->set_behaviour_var('_rawfraction', $prevraw);
         } else {
             $pendingstep->set_fraction(max($prevbest, $this->adjusted_fraction($fraction, $prevtries)));
-            $pendingstep->set_behaviour_var('_try', $prevtries + 1);
             $pendingstep->set_behaviour_var('_precheck', 0);
+            $pendingstep->set_behaviour_var('_numprechecks', $prevprechecks);
             $pendingstep->set_behaviour_var('_rawfraction', $fraction);
         }
         $pendingstep->set_new_response_summary($this->question->summarise_response($response));
@@ -131,7 +129,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
     }
 
 
-    // Grade the CodeRunner submission and cache the results$pendingstep-> in the pending step
+    // Grade the CodeRunner submission and cache the results in the pending step
     // for re-use.
     // Return a two-element array containing the mark (a fraction) and the state.
     protected function grade_response(question_attempt_pending_step $pendingstep, $isprecheck) {
@@ -153,6 +151,8 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
     // If the last penalty is '...', expand the previous two entries as an
     // arithmetic progression.
     protected function adjusted_fraction($fraction, $prevtries) {
+        $numprechecks = $this->qa->get_last_behaviour_var('_numprechecks', 0);
+        $prevtries -= $numprechecks; // Deduct prechecks from tries.
         if (!isset($this->question->penaltyregime) || $this->question->penaltyregime === '') {
             return parent::adjusted_fraction($fraction, $prevtries);
         } else if ($prevtries == 0) {

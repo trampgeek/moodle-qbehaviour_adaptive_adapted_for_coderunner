@@ -31,7 +31,18 @@ require_once($CFG->dirroot . '/question/behaviour/adaptive/renderer.php');
 class qbehaviour_adaptive_adapted_for_coderunner_renderer extends qbehaviour_adaptive_renderer
 {
     public function controls(question_attempt $qa, question_display_options $options) {
-        return $this->precheck_button($qa, $options) . "\n" . $this->submit_button($qa, $options);
+        $question = $qa->get_question();
+        if (!empty($question->precheck)) {
+            $buttons = $this->precheck_button($qa, $options) . "\n" . $this->submit_button($qa, $options);
+        } else {
+            $buttons = $this->submit_button($qa, $options);
+        }
+
+        $penalties = $question->penaltyregime ? $question->penaltyregime : $question->penalty * 100;
+        $penaltypara =  html_writer::tag('p',
+                get_string('penaltyregime', 'qtype_coderunner') . ': ' . s($penalties) . ' %',
+                array('class' => 'penaltyregime'));
+        return $buttons . $penaltypara;
     }
 
 
@@ -63,5 +74,16 @@ class qbehaviour_adaptive_adapted_for_coderunner_renderer extends qbehaviour_ada
                     array($attributes['id'], $qa->get_slot()));
         }
         return $output;
+    }
+
+
+
+    // Override superclass method to suppress feedback on prechecks.
+    public function feedback(question_attempt $qa, question_display_options $options) {
+        if ($qa->get_last_behaviour_var('_precheck', 0)) {
+            return '';
+        } else {
+            return parent::feedback($qa, $options);
+        }
     }
 }
