@@ -37,13 +37,7 @@ class qbehaviour_adaptive_adapted_for_coderunner_renderer extends qbehaviour_ada
         } else {
             $buttons = $this->submit_button($qa, $options);
         }
-
-        $penalties = $question->penaltyregime ? $question->penaltyregime :
-                number_format($question->penalty * 100, 1);
-        $penaltypara =  html_writer::tag('p',
-                get_string('penaltyregime', 'qtype_coderunner') . ': ' . s($penalties) . ' %',
-                array('class' => 'penaltyregime'));
-        return $buttons . $penaltypara;
+        return $buttons;
     }
 
 
