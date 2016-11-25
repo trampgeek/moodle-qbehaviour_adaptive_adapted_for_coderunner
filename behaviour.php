@@ -47,9 +47,9 @@ require_once($CFG->dirroot . '/question/behaviour/adaptive/behaviour.php');
 class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
     const IS_ARCHETYPAL = false;
 
-    public function required_question_definition_type() {
+    public function is_compatible_question(question_definition $question) {
         // Restrict behaviour to programming questions.
-        return 'qtype_coderunner_question';
+        return $question instanceof qtype_coderunner_question;
     }
 
     // Override parent method to allow for the added 'precheck' button.
