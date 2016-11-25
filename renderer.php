@@ -40,7 +40,6 @@ class qbehaviour_adaptive_adapted_for_coderunner_renderer extends qbehaviour_ada
         return $buttons;
     }
 
-
     /**
      * Construct the HTML for the optional 'precheck' button, which triggers
      * a partial submit in which no penalties are imposed but only the
@@ -51,7 +50,7 @@ class qbehaviour_adaptive_adapted_for_coderunner_renderer extends qbehaviour_ada
      */
     protected function precheck_button(question_attempt $qa, question_display_options $options) {
         if (!$qa->get_state()->is_active()) {
-            return '';  // Not sure if this can happen, but the submit button does it.
+            return '';  // This happens when we are on the Quiz review page, after the attempt is submitted.
         }
         $attributes = array(
             'type' => 'submit',
@@ -70,8 +69,6 @@ class qbehaviour_adaptive_adapted_for_coderunner_renderer extends qbehaviour_ada
         }
         return $output;
     }
-
-
 
     // Override superclass method to suppress feedback on prechecks.
     public function feedback(question_attempt $qa, question_display_options $options) {

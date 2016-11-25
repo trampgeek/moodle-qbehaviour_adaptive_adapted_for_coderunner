@@ -45,7 +45,6 @@ define('PRECHECK', true);
 require_once($CFG->dirroot . '/question/behaviour/adaptive/behaviour.php');
 
 class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
-    const IS_ARCHETYPAL = false;
 
     public function is_compatible_question(question_definition $question) {
         // Restrict behaviour to programming questions.
@@ -55,7 +54,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
     // Override parent method to allow for the added 'precheck' button.
     public function get_expected_data() {
         $vars = parent::get_expected_data();
-        if (!$this->qa->get_state()->is_finished()) {
+        if (!$this->qa->get_state()->is_finished() && !empty($this->question->precheck)) {
             $vars['precheck'] = PARAM_BOOL;
         }
         return $vars;
@@ -72,7 +71,16 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
     }
 
 
-    public function process_submit(question_attempt_pending_step $pendingstep, $isprecheck=false) {
+    public function summarise_action(question_attempt_step $step) {
+        if ($step->has_behaviour_var('precheck')) {
+            return $this->summarise_precheck($step);
+        } else {
+            return parent::summarise_action($step);
+        }
+    }
+
+
+    public function process_submit(question_attempt_pending_step $pendingstep, $isprecheck = false) {
         $status = $this->process_save($pendingstep);
         $response = $pendingstep->get_qt_data();
         if (!$this->question->is_complete_response($response)) {
@@ -177,7 +185,6 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
 
     // Override usual adaptive mark details to handle penalty regime.
     // This is messy. Is there a better way?
-
     protected function adaptive_mark_details_from_step(
             question_attempt_step $gradedstep,
             question_state $state, $maxmark, $penalty) {
@@ -246,5 +253,19 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
         $pendingstep->set_state($state);
         $pendingstep->set_fraction(max($prevbest, $this->adjusted_fraction($fraction, $prevtries)));
         return question_attempt::KEEP;
+    }
+
+    /**
+     * Summarise the student's action when they precheck a response.
+     *
+     * This gets shown in the response history table under each question when
+     * a teacher reviews a students attempt.
+     *
+     * @param question_attempt_step $step the step to summarise.
+     * @return string textual summary of that action.
+     */
+    public function summarise_precheck(question_attempt_step $step) {
+        return get_string('precheckedresponse', 'qbehaviour_adaptive_adapted_for_coderunner',
+                $this->question->summarise_response($step->get_qt_data()));
     }
 }
