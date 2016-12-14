@@ -100,11 +100,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
         }
 
         $prevtries = $this->qa->get_last_behaviour_var('_try', 0);
-        $prevprechecks = $this->qa->get_last_behaviour_var('_numprechecks', 0);
         $prevbest = $pendingstep->get_fraction();
-        if (is_null($prevbest)) {
-            $prevbest = 0;
-        }
 
         list($fraction, $state) = $this->grade_response($pendingstep, $isprecheck);
 
@@ -122,13 +118,15 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
             // Leave mark unchanged. Increment try and numprechecks.
             $pendingstep->set_fraction($prevbest);
             $pendingstep->set_behaviour_var('_precheck', 1);
+            $prevprechecks = $this->qa->get_last_behaviour_var('_numprechecks', 0);
             $pendingstep->set_behaviour_var('_numprechecks', $prevprechecks + 1);
-            $prevraw = $this->qa->get_last_behaviour_var('_rawfraction', 0);
-            $pendingstep->set_behaviour_var('_rawfraction', $prevraw);
+            $prevraw = $this->qa->get_last_behaviour_var('_rawfraction', null);
         } else {
+            if (is_null($prevbest)) {
+                $prevbest = 0;
+            }
             $pendingstep->set_fraction(max($prevbest, $this->adjusted_fraction($fraction, $prevtries)));
             $pendingstep->set_behaviour_var('_precheck', 0);
-            $pendingstep->set_behaviour_var('_numprechecks', $prevprechecks);
             $pendingstep->set_behaviour_var('_rawfraction', $fraction);
         }
         $pendingstep->set_new_response_summary($this->question->summarise_response($response));
