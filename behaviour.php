@@ -159,7 +159,8 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
     protected function adjusted_fraction($fraction, $prevtries) {
         $numprechecks = $this->qa->get_last_behaviour_var('_numprechecks', 0);
         $prevtries -= $numprechecks; // Deduct prechecks from tries.
-        if (!isset($this->question->penaltyregime) || $this->question->penaltyregime === '') {
+        $prevtries = max($prevtries, 0); // Can't be negative
+        if (empty($this->question->penaltyregime)) {
             return parent::adjusted_fraction($fraction, $prevtries);
         } else if ($prevtries == 0) {
             return $fraction;
