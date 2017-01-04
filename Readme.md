@@ -20,6 +20,10 @@ For full install instructions, see the
 
 CHANGE HISTORY
 
+4/01/17: Fix bug - previous answers were not being correctly loaded into the
+answer boxes when "Each attempt builds on the last" was used.
+
 Updated 9/11/16 to provide *Precheck* capabilities (an extra button that
 students can click to get a penalty-free run that provides limited checking
 of their code).
+
