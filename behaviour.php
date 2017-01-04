@@ -267,4 +267,24 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
         return get_string('precheckedresponse', 'qbehaviour_adaptive_adapted_for_coderunner',
                 $this->question->summarise_response($step->get_qt_data()));
     }
+
+
+    /**
+     * Used by {@link start_based_on()} to get the data needed to start a new
+     * attempt from the point this attempt has go to.
+     * We need to override the base behaviour, because it returns the qt_data from
+     * the highest-numbered question attempt step that has any qt data. For
+     * normal questions, that is the answer but due to the override of
+     * process_finish, it is the _outcome in our case.
+     * @return string an array mapping 'answer' to the last stored answer if
+     * there is one or an empty array otherwise.
+     */
+    protected function get_our_resume_data() {
+        $answer = $this->qa->get_last_qt_var('answer');
+        if ($answer) {
+            return array('answer' => $answer);
+        } else {
+            return array();
+        }
+    }
 }
