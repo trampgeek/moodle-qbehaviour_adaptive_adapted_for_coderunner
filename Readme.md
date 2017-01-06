@@ -20,6 +20,9 @@ For full install instructions, see the
 
 CHANGE HISTORY
 
+6/01/17: Fix wrong penalty calculation when using penalty-regime on question
+with all-or-nothing grading turned off.
+
 4/01/17: Fix bug - previous answers were not being correctly loaded into the
 answer boxes when "Each attempt builds on the last" was used.
 
