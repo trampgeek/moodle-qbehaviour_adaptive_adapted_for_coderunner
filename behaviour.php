@@ -160,7 +160,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
         $numprechecks = $this->qa->get_last_behaviour_var('_numprechecks', 0);
         $prevtries -= $numprechecks; // Deduct prechecks from tries.
         $prevtries = max($prevtries, 0); // Can't be negative
-        if (empty($this->question->penaltyregime)) {
+        if (empty($this->question->penaltyregime)) { // Legacy questions may lack penalty regime
             return parent::adjusted_fraction($fraction, $prevtries);
         } else if ($prevtries == 0) {
             return $fraction;
@@ -177,7 +177,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
             }
             $i = min($n - 1, $prevtries - 1);
             $penalty = floatval($penalties[$i]) / 100.0;
-            return $fraction - $penalty;
+            return $fraction * (1 - $penalty);
         }
     }
 
