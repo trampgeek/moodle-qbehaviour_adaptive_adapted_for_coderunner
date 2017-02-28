@@ -104,6 +104,15 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
 
         list($fraction, $state) = $this->grade_response($pendingstep, $isprecheck);
 
+        // First, handle a failed grading attempt (sandbox down?).
+        if ($state == question_state::$invalid) {
+            $pendingstep->set_state(question_state::$invalid);
+            if ($this->qa->get_state() != question_state::$invalid) {
+                $status = question_attempt::KEEP;
+            }
+            return $status;
+        }
+
         if ($prevstep->get_state() == question_state::$complete) {
             $pendingstep->set_state(question_state::$complete);
         } else if ($state == question_state::$gradedright && !$isprecheck) {
