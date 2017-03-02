@@ -20,6 +20,8 @@ For full install instructions, see the
 
 CHANGE HISTORY
 
+2/03/17: Prevent penalties being applied when grading fails due to a sandbox error
+
 6/01/17: Fix wrong penalty calculation when using penalty-regime on question
 with all-or-nothing grading turned off.
 
