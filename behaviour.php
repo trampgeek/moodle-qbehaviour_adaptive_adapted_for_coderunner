@@ -251,6 +251,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
                     $pendingstep->set_qt_var($name, $value);
                 }
             }
+            $pendingstep->set_behaviour_var('_precheck', 0);
             /* *** end of changed bit #2 ***/
 
             $pendingstep->set_behaviour_var('_try', $prevtries + 1);
