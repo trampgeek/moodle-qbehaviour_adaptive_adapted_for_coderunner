@@ -93,9 +93,10 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
 
         $prevstep = $this->qa->get_last_step_with_behaviour_var('_try');
         $prevresponse = $prevstep->get_qt_data();
-        $prevwasprecheck = $prevstep->get_behaviour_var('_precheck', 0);
+        $prevwasprecheck = $prevstep->get_behaviour_var('_precheck', 0) ? 1 : 0;
         $thisisprecheck = $isprecheck ? 1 : 0;  // Map truthy/falsy to 1, 0.
-        if ($prevwasprecheck === $thisisprecheck && $this->question->is_same_response($response, $prevresponse)) {
+        if ($prevwasprecheck === $thisisprecheck &&
+                $this->question->is_same_response($response, $prevresponse)) {
             return question_attempt::DISCARD;
         }
 
