@@ -60,6 +60,15 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
         return $vars;
     }
 
+    // Override parent method to allow for the added 'precheck' button.
+    public function get_state_string($showcorrectness) {
+        $laststep = $this->qa->get_last_step();
+        if ($laststep->has_behaviour_var('precheck')) {
+            return get_string('precheckresults', 'qbehaviour_adaptive_adapted_for_coderunner');
+        }
+
+        return parent::get_state_string($showcorrectness);
+    }
 
     // Override parent method to allow for the added 'precheck' button.
     public function process_action(question_attempt_pending_step $pendingstep) {
