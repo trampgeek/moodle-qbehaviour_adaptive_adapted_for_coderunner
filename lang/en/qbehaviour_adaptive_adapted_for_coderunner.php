@@ -27,5 +27,6 @@ $string['notcomplete'] = 'Not complete';
 $string['pluginname'] = 'Adaptive adapted for coderunner';
 $string['precheck'] = 'Precheck';
 $string['precheckedresponse'] = 'Prechecked: {$a}';
+$string['precheckresults'] = 'Precheck results';
 $string['triesremaining'] = 'Tries remaining: {$a}';
 $string['tryagain'] = 'Try again';
