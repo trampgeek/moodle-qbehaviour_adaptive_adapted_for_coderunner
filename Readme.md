@@ -19,6 +19,7 @@ For full install instructions, see the
 [CodeRunner install instructions](https://github.com/trampgeek/moodle-qtype_coderunner/blob/master/Readme.md).
 
 CHANGE HISTORY
+28/4/18: V1.3.4 Change state string to "Precheck" after a precheck. [Thanks to Tim Hunt.]
 20/5/17: V1.3.3 Prevent resubmission of an unchanged answer from being penalised.
 
 2/03/17: Prevent penalties being applied when grading fails due to a sandbox error
