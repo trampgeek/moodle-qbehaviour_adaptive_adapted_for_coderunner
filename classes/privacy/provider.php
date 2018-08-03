@@ -13,20 +13,26 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 /**
- * @package   qbehaviour_adaptive_adapted_for_coderunner
- * @copyright Richard Lobb, The University of Canterbury, New Zealand.
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Privacy Subsystem implementation for qtype_coderunner.
+ *
+ * @package    qbehaviour_adaptive_adapted_for_coderunner
+ * @copyright  2018 Richard Lobb
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace qbehaviour_adaptive_adapted_for_coderunner\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2018080300;
-$plugin->requires = 2013051400;
-$plugin->cron = 0;
-$plugin->component = 'qbehaviour_adaptive_adapted_for_coderunner';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.3.5';
-
-$plugin->dependencies = array();
+class provider implements \core_privacy\local\metadata\null_provider {
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason() {
+        return 'privacy:metadata';
+    }
+}
