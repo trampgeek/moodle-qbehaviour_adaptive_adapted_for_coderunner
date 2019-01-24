@@ -19,7 +19,7 @@ For full install instructions, see the
 [CodeRunner install instructions](https://github.com/trampgeek/moodle-qtype_coderunner/blob/master/Readme.md).
 
 ## CHANGE HISTORY
-
+25/01/19: V1.3.6. Fix bug in privacy provider (not working with pre-version7 PHP).
 03/8/18: V1.3.5 Implement Moodle Privacy API (null provider).
 
 28/4/18: V1.3.4 Change state string to "Precheck" after a precheck. [Thanks to Tim Hunt.]
