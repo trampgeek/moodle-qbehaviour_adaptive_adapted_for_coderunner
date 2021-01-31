@@ -157,8 +157,14 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
     // Grade the CodeRunner submission and cache the results in the pending step
     // for re-use.
     // Return a two-element array containing the mark (a fraction) and the state.
-    protected function grade_response(question_attempt_pending_step $pendingstep, $isprecheck) {
+    protected function grade_response(question_attempt_pending_step $pendingstep,
+            bool $isprecheck=false) {
         $response = $pendingstep->get_qt_data();
+        $numprechecks = intval($this->qa->get_last_behaviour_var('_numprechecks', 0));
+        $prevtries = intval($this->qa->get_last_behaviour_var('_try', 0));
+        $response['numchecks'] = $prevtries - $numprechecks;
+        $response['numprechecks'] = $numprechecks;
+        $response['fraction'] = floatval($pendingstep->get_fraction());
         $gradedata = $this->question->grade_response($response, $isprecheck);
         list($fraction, $state) = $gradedata;
         if (count($gradedata) > 2) {
