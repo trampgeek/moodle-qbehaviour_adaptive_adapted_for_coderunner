@@ -171,7 +171,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
         $response['numchecks'] = $prevtries - $numprechecks;
         $response['numprechecks'] = $numprechecks;
         $response['fraction'] = floatval($pendingstep->get_fraction());
-        $response['quizbehaviour'] = $this->preferredbehaviour;
+        $response['preferredbehaviour'] = $this->preferredbehaviour;
         $gradedata = $this->question->grade_response($response, $isprecheck);
         list($fraction, $state) = $gradedata;
         if (count($gradedata) > 2) {
