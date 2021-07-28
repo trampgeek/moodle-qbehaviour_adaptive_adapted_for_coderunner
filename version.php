@@ -22,10 +22,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2021022500;
+$plugin->version  = 2021072800;
 $plugin->requires = 2013051400;
 $plugin->cron = 0;
-$plugin->component = 'qbehaviour_adaptive_adapted_for_coderunner';
+$plugin->component = 'qbehaviour_adaptive_graphchecker';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->release = '1.3.9';
 
