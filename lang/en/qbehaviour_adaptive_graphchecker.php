@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'qbehaviour_interactive_adapted_for_coderunner', language 'en'.
+ * Strings for component 'qbehaviour_adaptive_graphchecker', language 'en'.
  *
  * @package    qbehaviour
  * @subpackage interactive
@@ -24,10 +24,11 @@
  */
 
 $string['notcomplete'] = 'Not complete';
-$string['pluginname'] = 'Adaptive adapted for coderunner';
+$string['pluginname'] = 'Adaptive behaviour adapted for GraphChecker';
 $string['precheck'] = 'Precheck';
 $string['precheckedresponse'] = 'Prechecked: {$a}';
 $string['precheckresults'] = 'Precheck results';
-$string['privacy:metadata'] = 'The qbehaviour_adaptive_adapted_for_coderunner question behaviour plugin does not store any personal data.';
+$string['privacy:metadata'] = 'The qbehaviour_adaptive_graphchecker question behaviour plugin does not store any personal data.';
 $string['triesremaining'] = 'Tries remaining: {$a}';
 $string['tryagain'] = 'Try again';
+

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Question behaviour type for adaptive_adapted_for_coderunner behaviour.
+ * Question behaviour type for adaptive_graphchecker behaviour.
  *
- * @package    qbehaviour_adaptive_adapted_for_coderunner
+ * @package    qbehaviour_adaptive_graphchecker
  * @copyright  2014 Richard Lobb
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2014 Richard Lobb
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qbehaviour_adaptive_adapted_for_coderunner_type extends qbehaviour_adaptive_type {
+class qbehaviour_adaptive_graphchecker_type extends qbehaviour_adaptive_type {
     public function is_archetypal() {
         return false;
     }

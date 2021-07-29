@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * Privacy Subsystem implementation for qtype_coderunner.
+ * Privacy Subsystem implementation for qbehaviour_adaptive_graphchecker.
  *
- * @package    qbehaviour_adaptive_adapted_for_coderunner
+ * @package    qbehaviour_adaptive_graphchecker
  * @copyright  2018 Richard Lobb
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace qbehaviour_adaptive_adapted_for_coderunner\privacy;
+namespace qbehaviour_adaptive_graphchecker\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 

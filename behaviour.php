@@ -24,13 +24,13 @@
  */
 
 /**
- *  Need a special behaviour for coderunner questions (which are assumed to be
+ *  Need a special behaviour for GraphChecker questions (which are assumed to be
  *  run in some sort of adaptive mode), in order to avoid repeating
  *  the expensive test run whenever question::grade_response is called.
  *
  *  The solution adopted here is to override the process_submit method of
- *  the adaptive behaviour so that it calls the coderunner::grade_response_raw
- *  method, rather than coderunner::grade_response. The raw method takes the
+ *  the adaptive behaviour so that it calls the grade_response_raw
+ *  method, rather than grade_response. The raw method takes the
  *  question_attempt_pending_step as a parameter rather than the response
  *  copied from that step. This allows the question to cache the test results
  *  within the step, which is stored in the database.
@@ -44,7 +44,7 @@ define('PRECHECK', true);
 
 require_once($CFG->dirroot . '/question/behaviour/adaptive/behaviour.php');
 
-class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
+class qbehaviour_adaptive_graphchecker extends qbehaviour_adaptive {
     
     public function __construct(question_attempt $qa, $preferredbehaviour) {
         parent::__construct($qa, $preferredbehaviour);
@@ -54,7 +54,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
 
     public function is_compatible_question(question_definition $question) {
         // Restrict behaviour to programming questions.
-        return $question instanceof qtype_coderunner_question;
+        return $question instanceof qtype_graphchecker_question;
     }
 
     // Override parent method to allow for the added 'precheck' button.
@@ -70,7 +70,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
     public function get_state_string($showcorrectness) {
         $laststep = $this->qa->get_last_step();
         if ($laststep->has_behaviour_var('precheck')) {
-            return get_string('precheckresults', 'qbehaviour_adaptive_adapted_for_coderunner');
+            return get_string('precheckresults', 'qbehaviour_adaptive_graphchecker');
         }
 
         return parent::get_state_string($showcorrectness);
@@ -297,7 +297,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
      * @return string textual summary of that action.
      */
     public function summarise_precheck(question_attempt_step $step) {
-        return get_string('precheckedresponse', 'qbehaviour_adaptive_adapted_for_coderunner',
+        return get_string('precheckedresponse', 'qbehaviour_adaptive_graphchecker',
                 $this->question->summarise_response($step->get_qt_data()));
     }
 

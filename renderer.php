@@ -17,7 +17,7 @@
 /**
  * Question behaviour for the old adaptive mode.
  *
- * @package    qbehaviour_adaptive_adapted_for_coderunner
+ * @package    qbehaviour_adaptive_graphchecker
  * @copyright  2016 Richard Lobb
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,7 +28,7 @@ global $CFG;
 require_once($CFG->dirroot . '/question/behaviour/adaptive/renderer.php');
 
 
-class qbehaviour_adaptive_adapted_for_coderunner_renderer extends qbehaviour_adaptive_renderer
+class qbehaviour_adaptive_graphchecker_renderer extends qbehaviour_adaptive_renderer
 {
     public function controls(question_attempt $qa, question_display_options $options) {
         $question = $qa->get_question();
@@ -58,7 +58,7 @@ class qbehaviour_adaptive_adapted_for_coderunner_renderer extends qbehaviour_ada
             'type' => 'submit',
             'id' => $qa->get_behaviour_field_name('precheck'),
             'name' => $qa->get_behaviour_field_name('precheck'),
-            'value' => get_string('precheck', 'qbehaviour_adaptive_adapted_for_coderunner'),
+            'value' => get_string('precheck', 'qbehaviour_adaptive_graphchecker'),
             'class' => 'submit btn btn-secondary',
         );
         if ($options->readonly) {
