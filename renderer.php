@@ -24,8 +24,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-
 require_once($CFG->dirroot . '/question/behaviour/adaptive/renderer.php');
+
+use qtype_coderunner\constants;
 
 
 class qbehaviour_adaptive_adapted_for_coderunner_renderer extends qbehaviour_adaptive_renderer
@@ -38,6 +39,9 @@ class qbehaviour_adaptive_adapted_for_coderunner_renderer extends qbehaviour_ada
         }
         if (!$question->hidecheck) {
             $buttons .= $this->submit_button($qa, $options);
+        }
+        if ($qa->get_behaviour()->is_give_up_avaiable_now()) {
+            $buttons .= $this->give_up_button($qa, $options);
         }
         return $buttons;
     }
@@ -59,6 +63,35 @@ class qbehaviour_adaptive_adapted_for_coderunner_renderer extends qbehaviour_ada
             'id' => $qa->get_behaviour_field_name('precheck'),
             'name' => $qa->get_behaviour_field_name('precheck'),
             'value' => get_string('precheck', 'qbehaviour_adaptive_adapted_for_coderunner'),
+            'class' => 'submit btn btn-secondary',
+        );
+        if ($options->readonly) {
+            $attributes['disabled'] = 'disabled';
+        }
+        $output = html_writer::empty_tag('input', $attributes);
+        if (!$options->readonly) {
+            $this->page->requires->js_init_call('M.core_question_engine.init_submit_button',
+                    array($attributes['id'], $qa->get_slot()));
+        }
+        return $output;
+    }
+
+    /**
+     * Render the button to stop the current attempt (if required).
+     *
+     * @param question_attempt $qa the current attempt at this question.
+     * @param question_display_options $options controls what should and should not be displayed.
+     * @return string HTML fragment.
+     */
+    protected function give_up_button(question_attempt $qa, question_display_options $options): string {
+        if (!$qa->get_state()->is_active()) {
+            return '';  // This happens when we are on the Quiz review page, after the attempt is submitted.
+        }
+        $attributes = array(
+            'type' => 'submit',
+            'id' => $qa->get_behaviour_field_name('finish'),
+            'name' => $qa->get_behaviour_field_name('finish'),
+            'value' => get_string('giveup', 'qbehaviour_adaptive_adapted_for_coderunner'),
             'class' => 'submit btn btn-secondary',
         );
         if ($options->readonly) {
