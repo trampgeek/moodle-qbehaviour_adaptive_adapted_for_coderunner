@@ -38,12 +38,17 @@ class qbehaviour_adaptive_adapted_for_coderunner_renderer extends qbehaviour_ada
             $buttons .= $this->precheck_button($qa, $options);
         }
         if (!$question->hidecheck) {
-            $buttons .= $this->submit_button($qa, $options);
+            // We want check to be a primary button, to contrast with the others.
+            $buttons .= str_replace('btn-secondary', 'btn-primary',
+                    $this->submit_button($qa, $options));
         }
         if ($qa->get_behaviour()->is_give_up_avaiable_now()) {
+            // Put in the space with a flex-grow div, not margins,
+            // because that works with both LTR and RTL languages.
+            $buttons .= html_writer::div('', 'flex-grow-1');
             $buttons .= $this->give_up_button($qa, $options);
         }
-        return $buttons;
+        return html_writer::div($buttons, 'd-flex');
     }
 
     /**
@@ -92,7 +97,7 @@ class qbehaviour_adaptive_adapted_for_coderunner_renderer extends qbehaviour_ada
             'id' => $qa->get_behaviour_field_name('finish'),
             'name' => $qa->get_behaviour_field_name('finish'),
             'value' => get_string('giveup', 'qbehaviour_adaptive_adapted_for_coderunner'),
-            'class' => 'submit btn btn-secondary',
+            'class' => 'submit btn btn-danger mx-0',
         );
         if ($options->readonly) {
             $attributes['disabled'] = 'disabled';
