@@ -18,8 +18,8 @@
  * Question behaviour for the old adaptive mode.
  *
  * @package    qbehaviour
- * @subpackage adaptive
- * @copyright  2009 The Open University
+ * @subpackage adaptive_adapted_for_coderunner
+ * @copyright  2009 The Open University, 2022 The University of Canterbury.
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
