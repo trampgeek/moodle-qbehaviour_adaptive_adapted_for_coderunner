@@ -48,6 +48,12 @@ require_once($CFG->dirroot . '/question/behaviour/adaptive/behaviour.php');
 
 class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
 
+    /** @var bool Whether penalties are enabled for this question. */
+    public $penaltiesenabled;
+
+    /** @var string The preferred behaviour for question. */
+    public $preferredbehaviour;
+
     public function __construct(question_attempt $qa, $preferredbehaviour) {
         parent::__construct($qa, $preferredbehaviour);
         $this->penaltiesenabled = $preferredbehaviour !== 'adaptivenopenalty';
