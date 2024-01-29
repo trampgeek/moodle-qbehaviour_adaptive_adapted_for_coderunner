@@ -48,10 +48,30 @@ require_once($CFG->dirroot . '/question/behaviour/adaptive/behaviour.php');
 
 class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
 
+    /** @var bool Whether penalties are enabled for this question. */
+    public $penaltiesenabled;
+
+    /** @var string The preferred behaviour for question. */
+    public $preferredbehaviour;
+
     public function __construct(question_attempt $qa, $preferredbehaviour) {
         parent::__construct($qa, $preferredbehaviour);
-        $this->penaltiesenabled = $preferredbehaviour !== 'adaptivenopenalty';
-        $this->preferredbehaviour = $preferredbehaviour;
+        if (is_null($preferredbehaviour)) {
+            // This occurs during question review. Values shouldn't matter.
+            $this->penalties_enabled = true;
+            $this->preferredbehaviour = 'adaptive';
+        } else if (is_string($preferredbehaviour)) {
+            $this->penaltiesenabled = $preferredbehaviour !== 'adaptivenopenalty';
+            $this->preferredbehaviour = $preferredbehaviour;
+        } else if (is_a($preferredbehaviour, 'qbehaviour_adaptive_adapted_for_coderunner')) {
+             // Almost certainly a regrade.
+             $this->penaltiesenabled = $preferredbehaviour->penaltiesenabled;
+             $this->preferredbehaviour = $preferredbehaviour->preferredbehaviour;
+        } else {
+            // Not sure how we might get here, but just in case ...
+            $this->penaltiesenabled = true;
+            $this->preferredbehaviour = get_class($preferredbehaviour);
+        }
     }
 
     public function can_finish_during_attempt() {
@@ -227,7 +247,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
                 $pendingstep->set_qt_var($name, $value);
             }
         }
-        return array($fraction, $state);
+        return [$fraction, $state];
     }
 
 
@@ -239,7 +259,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
     protected function adjusted_fraction($fraction, $prevtries) {
         $numprechecks = $this->qa->get_last_behaviour_var('_numprechecks', 0);
         $prevtries -= $numprechecks; // Deduct prechecks from tries.
-        $prevtries = max($prevtries, 0); // Can't be negative
+        $prevtries = max($prevtries, 0); // Can't be negative.
         if (!$this->penaltiesenabled || $prevtries == 0) {
             return $fraction;
         } else if (empty($this->question->penaltyregime)) { // Legacy questions may lack penalty regime.
@@ -393,9 +413,9 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
     protected function get_our_resume_data() {
         $answer = $this->qa->get_last_qt_var('answer');
         if ($answer) {
-            return array('answer' => $answer);
+            return ['answer' => $answer];
         } else {
-            return array();
+            return [];
         }
     }
 }
