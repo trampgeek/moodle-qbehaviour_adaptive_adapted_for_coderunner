@@ -51,27 +51,25 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
     /** @var bool Whether penalties are enabled for this question. */
     public $penaltiesenabled;
 
-    /** @var string The preferred behaviour for question. */
+    /** @var string The preferred behaviour for question. May be a string or an object. */
     public $preferredbehaviour;
 
     public function __construct(question_attempt $qa, $preferredbehaviour) {
         parent::__construct($qa, $preferredbehaviour);
-        if (is_null($preferredbehaviour)) {
-            // This occurs during question review. Values shouldn't matter.
-            $this->penalties_enabled = true;
-            $this->preferredbehaviour = 'adaptive';
-        } else if (is_string($preferredbehaviour)) {
-            $this->penaltiesenabled = $preferredbehaviour !== 'adaptivenopenalty';
+        if (is_string($preferredbehaviour)) {
             $this->preferredbehaviour = $preferredbehaviour;
         } else if (is_a($preferredbehaviour, 'qbehaviour_adaptive_adapted_for_coderunner')) {
-             // Almost certainly a regrade.
-             $this->penaltiesenabled = $preferredbehaviour->penaltiesenabled;
+             // Almost certainly a regrade, in which case the $preferredbehaviour
+             // is the behaviour object from the initial run. Need to extract the
+             // string $preferredbehaviour from that object.
              $this->preferredbehaviour = $preferredbehaviour->preferredbehaviour;
+        } else if (is_a($preferredbehaviour, 'question_behaviour')) {
+            $this->preferredbehaviour = $preferredbehaviour->get_name();
         } else {
-            // Not sure how we might get here, but just in case ...
-            $this->penaltiesenabled = true;
-            $this->preferredbehaviour = get_class($preferredbehaviour);
+            // May be a null behaviour (e.g. during quiz review) or something weird. Fall back to adaptive.
+            $this->preferredbehaviour = 'adaptive';
         }
+        $this->penaltiesenabled = $this->preferredbehaviour !== 'adaptivenopenalty';
     }
 
     public function can_finish_during_attempt() {
