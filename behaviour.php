@@ -203,6 +203,11 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
             $prevprechecks = $this->qa->get_last_behaviour_var('_numprechecks', 0);
             $pendingstep->set_behaviour_var('_numprechecks', $prevprechecks + 1);
             $prevraw = $this->qa->get_last_behaviour_var('_rawfraction', null);
+
+            if ($this->question->hidecheck ?? false) {
+                // We can't check so this submission is effectively complete, as if in deferred mode.
+                $pendingstep->set_state(question_state::$complete);
+            }
         } else {
             if (is_null($prevbest)) {
                 $prevbest = 0;
