@@ -47,7 +47,6 @@ use qtype_coderunner\constants;
 require_once($CFG->dirroot . '/question/behaviour/adaptive/behaviour.php');
 
 class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
-
     /** @var bool Whether penalties are enabled for this question. */
     public $penaltiesenabled;
 
@@ -167,15 +166,17 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
         $prevresponse = $prevstep->get_qt_data();
         $prevwasprecheck = $prevstep->get_behaviour_var('_precheck', 0) ? 1 : 0;
         $thisisprecheck = $isprecheck ? 1 : 0;  // Map truthy/falsy to 1, 0.
-        if ($prevwasprecheck === $thisisprecheck &&
-                $this->question->is_same_response($response, $prevresponse)) {
+        if (
+            $prevwasprecheck === $thisisprecheck &&
+            $this->question->is_same_response($response, $prevresponse)
+        ) {
             return question_attempt::DISCARD;
         }
 
         $prevtries = $this->qa->get_last_behaviour_var('_try', 0);
         $prevbest = $pendingstep->get_fraction();
 
-        list($fraction, $state) = $this->grade_response($pendingstep, $isprecheck);
+        [$fraction, $state] = $this->grade_response($pendingstep, $isprecheck);
 
         // First, handle a failed grading attempt (sandbox down?).
         // We know it's not exactly the same response twice in a row, so
@@ -225,8 +226,10 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
     // Grade the CodeRunner submission and cache the results in the pending step
     // for re-use.
     // Return a two-element array containing the mark (a fraction) and the state.
-    protected function grade_response(question_attempt_pending_step $pendingstep,
-            bool $isprecheck=false) {
+    protected function grade_response(
+        question_attempt_pending_step $pendingstep,
+        bool $isprecheck = false
+    ) {
         $response = $pendingstep->get_qt_data();
         $numprechecks = intval($this->qa->get_last_behaviour_var('_numprechecks', 0));
         $prevtries = intval($this->qa->get_last_behaviour_var('_try', 0));
@@ -244,7 +247,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
             $response['graderstate'] = $graderstate;
         }
         $gradedata = $this->question->grade_response($response, $isprecheck);
-        list($fraction, $state) = $gradedata;
+        [$fraction, $state] = $gradedata;
         if (count($gradedata) > 2) {
             foreach ($gradedata[2] as $name => $value) {
                 $pendingstep->set_qt_var($name, $value);
@@ -318,8 +321,11 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
     // Override usual adaptive mark details to handle penalty regime.
     // This is messy. Is there a better way?
     protected function adaptive_mark_details_from_step(
-            question_attempt_step $gradedstep,
-            question_state $state, $maxmark, $penalty) {
+        question_attempt_step $gradedstep,
+        question_state $state,
+        $maxmark,
+        $penalty
+    ) {
         if (!isset($this->question->penaltyregime) || $this->question->penaltyregime === '') {
             $details = parent::adaptive_mark_details_from_step($gradedstep, $state, $maxmark, $penalty);
         } else {
@@ -355,7 +361,6 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
             $state = question_state::$gaveup;
             $fraction = 0;
         } else {
-
             if ($laststep->has_behaviour_var('_try')) {
                 // Last answer was graded, we want to regrade it. Otherwise the answer
                 // has changed, and we are grading a new try.
@@ -369,7 +374,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
             /****** Changed bit #2 begins ***.
              * Cache extra data from grade response */
             $gradedata = $this->question->grade_response($response);
-            list($fraction, $state) = $gradedata;
+            [$fraction, $state] = $gradedata;
             if (count($gradedata) > 2) {
                 foreach ($gradedata[2] as $name => $value) {
                     $pendingstep->set_qt_var($name, $value);
@@ -398,8 +403,11 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
      * @return string textual summary of that action.
      */
     public function summarise_precheck(question_attempt_step $step) {
-        return get_string('precheckedresponse', 'qbehaviour_adaptive_adapted_for_coderunner',
-                $this->question->summarise_response($step->get_qt_data()));
+        return get_string(
+            'precheckedresponse',
+            'qbehaviour_adaptive_adapted_for_coderunner',
+            $this->question->summarise_response($step->get_qt_data())
+        );
     }
 
 
