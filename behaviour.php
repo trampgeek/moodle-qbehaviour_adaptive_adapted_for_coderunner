@@ -240,7 +240,13 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
         $graderstate = '';
         $testoutcomeserialised = $this->qa->get_last_qt_var('_testoutcome', '');
         if ($testoutcomeserialised !== '') {
-            $testoutcome = $this->question->unserialize_outcome($testoutcomeserialised);
+            // Unserialise with question's code if it's a sufficiently recent coderunner version,
+            // otherwise use PHP's standard unserialize (the legacy case).
+            if (method_exists($this->question, 'unserialize_outcome')) {
+                $testoutcome = $this->question->unserialize_outcome($testoutcomeserialised);
+            } else {
+                $testoutcome = unserialize(testoutcomeserialised);
+            }
             if (isset($testoutcome->graderstate)) {
                 $graderstate = $testoutcome->graderstate;
             }

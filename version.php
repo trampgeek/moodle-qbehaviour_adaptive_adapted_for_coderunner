@@ -29,6 +29,4 @@ $plugin->component = 'qbehaviour_adaptive_adapted_for_coderunner';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->release = '1.4.3';
 
-$plugin->dependencies = [
-    'qtype_coderunner' => 2024051200,
-];
+$plugin->dependencies = [];
