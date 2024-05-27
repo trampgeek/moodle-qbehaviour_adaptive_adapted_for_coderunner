@@ -245,7 +245,7 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
             if (method_exists($this->question, 'unserialize_outcome')) {
                 $testoutcome = $this->question->unserialize_outcome($testoutcomeserialised);
             } else {
-                $testoutcome = unserialize(testoutcomeserialised);
+                $testoutcome = unserialize($testoutcomeserialised);
             }
             if (isset($testoutcome->graderstate)) {
                 $graderstate = $testoutcome->graderstate;
