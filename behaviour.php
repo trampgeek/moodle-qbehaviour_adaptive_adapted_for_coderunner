@@ -350,6 +350,19 @@ class qbehaviour_adaptive_adapted_for_coderunner extends qbehaviour_adaptive {
     }
 
 
+    /**
+     * Used by {@link start_based_on()} to get the data needed to start a new
+     * attempt from the point this attempt has go to.
+     * Override the base behaviour to remove prior _testoutcome data.
+     * @return array name => value pairs.
+     */
+    public function get_resume_data() {
+        $olddata = parent::get_resume_data();
+        unset($olddata['_testoutcome']);
+        return $olddata;
+    }
+
+
     public function process_finish(question_attempt_pending_step $pendingstep) {
         if ($this->qa->get_state()->is_finished()) {
             return question_attempt::DISCARD;
